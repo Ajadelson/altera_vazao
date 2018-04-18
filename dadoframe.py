@@ -43,4 +43,4 @@ def retorna_dataframe():
 	return df
 
 #main
-print(retorna_dataframe())
+#print(retorna_dataframe())
