@@ -1,13 +1,13 @@
 import pandas as pd
-from dadoframe import retorna_dataframe
+import cufflinks as cf
+from plotly.offline import iplot
+from dadoframe import chesf_dataframe, ons_dataframe
 
 class Base():
     """seleção de dados por ano hidrologico e vazão limite."""
 
-    def __init__(self, nome_arquivo):
+    def __init__(self, nome_arquivo = 'padrao'):
         """Inicializa os atributos."""
         self.arquivo = nome_arquivo
-
-        if self.arquivo.upper() == 'CHESF':
-            self.df = retorna_dataframe()
-            print(self.df)
+        self.chesf = chesf_dataframe()
+        self.ons = ons_dataframe()

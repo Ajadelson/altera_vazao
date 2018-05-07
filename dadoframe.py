@@ -10,7 +10,23 @@ def xlread(arq_xls):
 	for i in range(plan.nrows):
 		yield plan.row_values(i)
 
-def retorna_dataframe():
+def ons_dataframe():
+	arq = "Vazões_Diárias_1931_2015.xls"
+	data = []
+	dado = []
+	flag = False
+	for linha in xlread(arq):
+		if linha[0] == '1/jan/1931':
+			flag = True
+		if flag:
+			org = linha[0].split("/")
+			x = date(int(org[0], org[1], int(org[2])))
+			data.append(x.strftime("%d/%m/%Y"))
+			dado.append(linha[150])
+		dicio = {"Dia" : data, "Vazao" : dado}
+	print (dicio)
+
+def chesf_dataframe():
 	aux=''
 	arq="defluencia_db.xls"
 	data=[]
