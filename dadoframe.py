@@ -1,6 +1,6 @@
 import xlrd
 import pandas as pd
-from datetime import date
+from datetime import date, timedelta
 
 def xlread(arq_xls):
 	"""Função que ler arquivos .xls"""
@@ -18,13 +18,14 @@ def ons_dataframe():
 	for linha in xlread(arq):
 		if linha[0] == '1/jan/1931':
 			flag = True
+			x = date(1931,1,1)
 		if flag:
-			org = linha[0].split("/")
-			x = date(int(org[0], org[1], int(org[2])))
-			data.append(x.strftime("%d/%m/%Y"))
+			data.append(x)
+			x = x + timedelta(days=1)
 			dado.append(linha[150])
-		dicio = {"Dia" : data, "Vazao" : dado}
-	print (dicio)
+	dicio = {"Dia" : data, "Vazao" : dado}
+	df = pd.DataFrame(dicio)
+	return df
 
 def chesf_dataframe():
 	aux=''

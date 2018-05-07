@@ -11,3 +11,6 @@ class Base():
         self.arquivo = nome_arquivo
         self.chesf = chesf_dataframe()
         self.ons = ons_dataframe()
+
+    def grafico(self):
+        self.chesf.iplot(kind='scatter')
