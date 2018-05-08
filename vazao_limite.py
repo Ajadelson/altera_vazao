@@ -18,6 +18,7 @@ class Base():
         self.ons = ons_dataframe()
         self.result = uni()
 
+
     def grafico(self):
         """Plota os graficos """
         #cf.go_offline()
