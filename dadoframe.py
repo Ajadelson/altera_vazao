@@ -11,6 +11,7 @@ def xlread(arq_xls):
 		yield plan.row_values(i)
 
 def ons_dataframe():
+	"""Geração do dataframe da ONS"""
 	arq = "Vazões_Diárias_1931_2015.xls"
 	data = []
 	dado = []
@@ -29,6 +30,7 @@ def ons_dataframe():
 	return df
 
 def chesf_dataframe():
+	"""Geração do dataframe da Chesf"""
 	aux=''
 	arq="defluencia_db.xls"
 	data=[]
@@ -62,6 +64,7 @@ def chesf_dataframe():
 	return df
 
 def uni():
+	"""União dos dois dataframes"""
 	arq = "Vazões_Diárias_1931_2015.xls"
 	data = []
 	dado = []
