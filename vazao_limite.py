@@ -5,8 +5,11 @@ import plotly
 import plotly.tools as tls
 from plotly.graph_objs import *
 import numpy as np
+#from plotly.offline import iplot
 from datetime import date, timedelta
 from dadoframe import chesf_dataframe, ons_dataframe, uni
+
+#cf.set_config_file(offline=True)
 
 class Base():
     """seleção de dados por ano hidrologico e vazão limite."""
@@ -23,8 +26,22 @@ class Base():
         #cf.go_offline()
         quartil_ons = np.percentile(self.ons['Vazao'], 75)
         quartil_chesf = np.percentile(self.chesf['Vazao'], 75)
-        ons = Scatter(x=self.result['Dia'], y=self.result['ONS'])
-        chesf = Scatter(x=self.result['Dia'], y=self.result['CHESF'])
-        data = Data([ons, chesf])
-        plotly.offline.plot(data)
-        #self.result.plot(kind='scatter')
+
+        lin_quartil_ons = Scatter(x=self.result['Dia'],
+        y=[quartil_ons for h in self.result.iterrows()], name='Cheia ONS')
+
+        lin_quartil_chesf = Scatter(x=self.chesf['Dia'],
+        y=[quartil_chesf for h in self.chesf.iterrows()], name='Cheia CHESF')
+
+        ons = Scatter(x=self.result['Dia'], y=self.result['ONS'],
+        name='Dados ONS')
+
+        chesf = Scatter(x=self.result['Dia'], y=self.result['CHESF'],
+        name='Dados CHESF')
+
+        data = Data([ons, chesf, lin_quartil_ons, lin_quartil_chesf])
+        layout = dict(title='Vazão limite', xaxis=dict(title='Dias'),
+        yaxis=dict(title='m³ de água'))
+
+        plotly.offline.plot(dict(data=data, layout=layout))
+        #self.result.iplot(kind='spread')
