@@ -7,3 +7,8 @@ import numpy as np
 from plotly.graph_objs import *
 from datetime import date, timedelta
 from dadoframe import chesf_dataframe, ons_dataframe, uni
+
+class Stats():
+    """Caracteriza as alterações de cheias anuais quanto à
+    frequencia, duração e periodo de ocorrência."""
+    
