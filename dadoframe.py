@@ -1,3 +1,6 @@
+"""Arquivo que lê os arquivos em excel e retorna
+os dataframes."""
+
 import xlrd
 import pandas as pd
 from datetime import date, timedelta
