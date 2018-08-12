@@ -59,3 +59,23 @@ class Grafics():
         'y':self.reor[ano],
         'name' : ano,
         } for ano in self.reor.columns])
+
+    def max_anual(self, posto='ons'):
+        """Grafico da Serie de Maximas"""
+        df_max = pd.DataFrame()
+        if posto=='ons':
+            self.hidr_anual_ons()
+        else:
+            self.hidr_anual_chesf()
+        ano=[]
+        valor=[]
+        for i in self.reor.columns:
+            x=self.reor[i].max().item()
+            ano.append(i)
+            valor.append(x)
+        maxi={"ano":ano, "valor":valor}
+        maxi=pd.DataFrame(maxi)
+        plotly.offline.plot([{
+        'y':maxi["valor"],
+        'x':maxi["ano"],
+        }])

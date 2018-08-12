@@ -1,4 +1,4 @@
-from vazao_limite import *
+from grafico_anual import *
 
-teste=Base()
-teste.grafico()
+t=Grafics()
+t.max_anual()
