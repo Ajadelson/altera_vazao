@@ -5,72 +5,38 @@ import plotly.tools as tls
 import cufflinks as cf
 from plotly.graph_objs import *
 from datetime import date, timedelta
+from calendario_anual import *
 from dadoframe import chesf_dataframe, ons_dataframe, uni
 
 class Grafics():
     """Plotando os graficos"""
 
     def __init__(self):
-        self.chesf = chesf_dataframe()
-        self.ons = ons_dataframe()
+        self.chesf = transform(chesf_dataframe())
+        self.ons = transform(ons_dataframe())
 
-    def hidr_anual_chesf(self):
-        anoinicio = self.chesf[self.chesf.index==0].Dia.item().year
-        anofinal = self.chesf["Dia"][self.chesf.index[-1]].year +1
-
-        self.chesf["ano"] = self.chesf["Dia"].values
-        self.reorg={}
-        for index, i in self.chesf.iterrows():
-            i['ano']=i.Dia.year
-
-            try:
-                self.reorg[i.ano].append(i.Vazao)
-            except:
-                self.reorg[i.ano]=[i.Vazao]
-
-        for col in self.reorg.keys():
-            while len(self.reorg[col])<366:
-                self.reorg[col].append(None)
-        self.reor=pd.DataFrame(self.reorg)
+    def hidr_anual(self, posto='chesf'):
+        if posto == 'chesf':
+            self.dp = self.chesf
+        else:
+            self.dp = self.ons
         plotly.offline.plot([{
-        'y':self.reor[ano],
+        'y':self.dp[ano],
         'name' : ano,
-        } for ano in self.reor.columns])
+        } for ano in self.dp.columns])
 
-    def hidr_anual_ons(self):
-        anoinicio = self.ons[self.ons.index==0].Dia.item().year
-        anofinal = self.ons["Dia"][self.ons.index[-1]].year +1
-
-        self.ons["ano"] = self.ons["Dia"].values
-        self.reorg={}
-        for index, i in self.ons.iterrows():
-            i['ano']=i.Dia.year
-
-            try:
-                self.reorg[i.ano].append(i.Vazao)
-            except:
-                self.reorg[i.ano]=[i.Vazao]
-
-        for col in self.reorg.keys():
-            while len(self.reorg[col])<366:
-                self.reorg[col].append(None)
-        self.reor=pd.DataFrame(self.reorg)
-        plotly.offline.plot([{
-        'y':self.reor[ano],
-        'name' : ano,
-        } for ano in self.reor.columns])
 
     def max_anual(self, posto='ons'):
         """Grafico da Serie de Maximas"""
-        df_max = pd.DataFrame()
+        #df_max = pd.DataFrame()
         if posto=='ons':
-            self.hidr_anual_ons()
+            self.max = self.ons
         else:
-            self.hidr_anual_chesf()
+            self.max = self.chesf
         ano=[]
         valor=[]
-        for i in self.reor.columns:
-            x=self.reor[i].max().item()
+        for i in self.max.columns:
+            x = self.max[i].max().item()
             ano.append(i)
             valor.append(x)
         maxi={"ano":ano, "valor":valor}
