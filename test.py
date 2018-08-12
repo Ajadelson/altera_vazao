@@ -1,4 +1,4 @@
-from grafico_anual import *
+from estima import *
 
-t=Grafics()
-t.max_anual()
+t=Stats()
+t.taxas_ascensao()

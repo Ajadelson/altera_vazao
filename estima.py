@@ -6,6 +6,7 @@ import numpy as np
 
 from plotly.graph_objs import *
 from datetime import date, timedelta
+from calendario_anual import *
 from dadoframe import chesf_dataframe, ons_dataframe, uni
 
 class Stats():
@@ -14,10 +15,83 @@ class Stats():
 
     def __init__(self):
         """inicia os atributos"""
-        self.chesf = chesf_dataframe()
-        self.ons = ons_dataframe()
+        self.chesf = transform(chesf_dataframe())
+        self.ons = transform(ons_dataframe())
         self.result = uni()
+        self.ascensao = []
+        self.recessao = None
+        self.reversao = None
 
-        self.ons_anual = []
+    def taxas_ascensao(self, posto = 'chesf'):
+        """Calcula as taxas de ascensao, recessao"""
+        if posto == 'chesf':
+            df = self.chesf
+        else:
+            df = self.ons
 
-        
+        dic = {}
+        for col in df.columns:
+            dia = 0
+            lista = []
+            tempo = 1
+            flag = False
+            for index, linha in df.iterrows():
+                if dia == 0:
+                    #print("Entra")
+                    self.ponteiroum = linha[col]
+                    self.ponteirodois = linha[col]
+                    dia += 1
+
+                elif linha[col] > self.ponteirodois:
+                    #print("Entra")
+                    self.ponteirodois = linha[col]
+                    flag = True
+                    tempo+=1
+                elif flag:
+                    aux = self.ponteirodois - self.ponteiroum
+                    aux = aux / tempo
+                    lista.append(aux)
+                    flag = False
+                    tempo = 1
+                else:
+                    dia = 0
+            dic[col] = lista
+        self.ascensao = pd.Series(dic)
+        return(self.ascensao)
+
+    def taxas_recessao(self, posto = 'chesf'):
+        """Calcula as taxas de ascensao, recessao"""
+        if posto == 'chesf':
+            df = self.chesf
+        else:
+            df = self.ons
+
+        dic = {}
+        for col in df.columns:
+            dia = 0
+            lista = []
+            tempo = 1
+            flag = False
+            for index, linha in df.iterrows():
+                if dia == 0:
+                    #print("Entra")
+                    self.ponteiroum = linha[col]
+                    self.ponteirodois = linha[col]
+                    dia += 1
+
+                elif linha[col] < self.ponteirodois:
+                    #print("Entra")
+                    self.ponteirodois = linha[col]
+                    flag = True
+                    tempo+=1
+                elif flag:
+                    aux = self.ponteirodois - self.ponteiroum
+                    aux = aux / tempo
+                    lista.append(aux)
+                    flag = False
+                    tempo = 1
+                else:
+                    dia = 0
+            dic[col] = lista
+        self.recessao = pd.Series(dic)
+        return(self.recessao)
