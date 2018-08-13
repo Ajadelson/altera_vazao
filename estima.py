@@ -100,7 +100,7 @@ class Stats():
         if posto == 'chesf':
             fig = self.taxas_ascensao('chesf')
         else:
-            fig = sel.taxas_ascensao('ons')
+            fig = self.taxas_ascensao('ons')
 
         data = []
         quant = 0
@@ -118,4 +118,42 @@ class Stats():
         for col in new_df.columns:
             data.append(go.Box(y=new_df[col], name=col))
         data.append(go.Scatter(x=new_df.columns, y=new_df.mean(skipna=True), mode='lines', name='média'))
-        plotly.offline.plot(data)
+
+        layout = go.Layout(
+        title='Box plot por ano hidrológico da taxa de recessao %s'%posto,
+        yaxis=dict(title='taxa [m³/dia]')
+        )
+
+        fig = go.Figure(data=data, layout=layout)
+        plotly.offline.plot(fig, filename='box plot taxa de ascensao %s'%posto)
+
+    def grafico_recessao(self, posto = 'chesf'):
+        if posto == 'chesf':
+            fig = self.taxas_recessao('chesf')
+        else:
+            fig = self.taxas_recessao('ons')
+
+        data = []
+        quant = 0
+        dicio = {}
+        for col in fig.keys():
+            if len(fig[col]) > quant:
+                quant = len(fig[col])
+        for col in fig.keys():
+            dicio[col]=fig[col]
+        for key in dicio.keys():
+            while len(dicio[key]) < quant:
+                dicio[key].append(None)
+
+        new_df = pd.DataFrame(dicio)
+        for col in new_df.columns:
+            data.append(go.Box(y=new_df[col], name=col))
+        data.append(go.Scatter(x=new_df.columns, y=new_df.mean(skipna=True), mode='lines', name='média'))
+
+        layout = go.Layout(
+        title='Box plot por ano hidrológico da taxa de recessao %s'%posto,
+        yaxis=dict(title='taxa [m³/dia]')
+        )
+
+        fig = go.Figure(data=data, layout=layout)
+        plotly.offline.plot(fig, filename='box plot taxa de recessao %s'%posto)
