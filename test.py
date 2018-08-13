@@ -1,4 +1,4 @@
 from estima import *
 
 t=Stats()
-t.taxas_ascensao()
+t.grafico_ascensao()

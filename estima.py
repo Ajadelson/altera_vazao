@@ -3,7 +3,7 @@ import plotly.plotly as py
 import plotly
 import plotly.tools as tls
 import numpy as np
-
+import plotly.graph_objs as go
 from plotly.graph_objs import *
 from datetime import date, timedelta
 from calendario_anual import *
@@ -95,3 +95,27 @@ class Stats():
             dic[col] = lista
         self.recessao = pd.Series(dic)
         return(self.recessao)
+
+    def grafico_ascensao(self, posto = 'chesf'):
+        if posto == 'chesf':
+            fig = self.taxas_ascensao('chesf')
+        else:
+            fig = sel.taxas_ascensao('ons')
+
+        data = []
+        quant = 0
+        dicio = {}
+        for col in fig.keys():
+            if len(fig[col]) > quant:
+                quant = len(fig[col])
+        for col in fig.keys():
+            dicio[col]=fig[col]
+        for key in dicio.keys():
+            while len(dicio[key]) < quant:
+                dicio[key].append(None)
+
+        new_df = pd.DataFrame(dicio)
+        for col in new_df.columns:
+            data.append(go.Box(y=new_df[col], name=col))
+        data.append(go.Scatter(x=new_df.columns, y=new_df.mean(skipna=True), mode='lines', name='média'))
+        plotly.offline.plot(data)
