@@ -17,7 +17,7 @@ class Stats():
         """inicia os atributos"""
         self.chesf = transform(chesf_dataframe())
         self.ons = transform(ons_dataframe())
-        self.result = uni()
+        #self.result = uni()
         self.ascensao = []
         self.recessao = None
         self.reversao = None
@@ -30,11 +30,13 @@ class Stats():
             df = self.ons
 
         dic = {}
+        reversao = {}
         for col in df.columns:
             dia = 0
             lista = []
             tempo = 1
             flag = False
+            rev=0
             for index, linha in df.iterrows():
                 if dia == 0:
                     #print("Entra")
@@ -53,11 +55,13 @@ class Stats():
                     lista.append(aux)
                     flag = False
                     tempo = 1
+                    rev+=1
                 else:
                     dia = 0
             dic[col] = lista
+            reversao[col]=rev
         self.ascensao = pd.Series(dic)
-        return(self.ascensao)
+        return(reversao,self.ascensao)
 
     def taxas_recessao(self, posto = 'chesf'):
         """Calcula as taxas de ascensao, recessao"""
@@ -67,11 +71,13 @@ class Stats():
             df = self.ons
 
         dic = {}
+        reversao = {}
         for col in df.columns:
             dia = 0
             lista = []
             tempo = 1
             flag = False
+            rev = 0
             for index, linha in df.iterrows():
                 if dia == 0:
                     #print("Entra")
@@ -90,17 +96,19 @@ class Stats():
                     lista.append(aux)
                     flag = False
                     tempo = 1
+                    rev+=1
                 else:
                     dia = 0
             dic[col] = lista
+            reversao[col]=rev
         self.recessao = pd.Series(dic)
-        return(self.recessao)
+        return(reversao, self.recessao)
 
     def grafico_ascensao(self, posto = 'chesf'):
         if posto == 'chesf':
-            fig = self.taxas_ascensao('chesf')
+            r, fig = self.taxas_ascensao('chesf')
         else:
-            fig = self.taxas_ascensao('ons')
+            r, fig = self.taxas_ascensao('ons')
 
         data = []
         quant = 0
@@ -129,9 +137,9 @@ class Stats():
 
     def grafico_recessao(self, posto = 'chesf'):
         if posto == 'chesf':
-            fig = self.taxas_recessao('chesf')
+            r, fig = self.taxas_recessao('chesf')
         else:
-            fig = self.taxas_recessao('ons')
+            r, fig = self.taxas_recessao('ons')
 
         data = []
         quant = 0
@@ -157,3 +165,30 @@ class Stats():
 
         fig = go.Figure(data=data, layout=layout)
         plotly.offline.plot(fig, filename='box plot taxa de recessao %s'%posto)
+
+    def grafico_reversao(self, posto='chesf'):
+        if posto == 'chesf':
+            revum, fig = self.taxas_ascensao('chesf')
+            revdois, fig2 = self.taxas_recessao('chesf')
+        else:
+            revum, fig = self.taxas_ascensao('ons')
+            revdois, fig = self.taxas_recessao('ons')
+
+        new_rev = {'quantidade':[]}
+        revtoasc = {'quantidade':[]}
+        revtorec = {'quantidade':[]}
+        for i in revum.keys():
+            new_rev['quantidade'].append(revum[i]+revdois[i])
+            revtoasc['quantidade'].append(revdois[i])
+            revtorec['quantidade'].append(revum[i])
+        new_rev = pd.DataFrame(new_rev)
+        revtoasc = pd.DataFrame(revtoasc)
+        revtorec = pd.DataFrame(revtorec)
+        layout = go.Layout(
+        title='Numero de reversões por ano hidrologico da %s'%posto,
+        )
+        data = [go.Scatter(y=new_rev['quantidade'], name='nº de reversões totais', mode='lines+markers'),
+        go.Scatter(y=revtoasc['quantidade'], name='reversões para ascensão', mode='lines+markers'),
+        go.Scatter(y=revtorec['quantidade'], name='reversões para recessao', mode='lines+markers')]
+        fig = go.Figure(data=data, layout=layout)
+        plotly.offline.plot(fig, filename='Numero de reversões %s'%posto)
