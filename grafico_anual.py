@@ -3,6 +3,7 @@ import plotly.plotly as py
 import plotly
 import plotly.tools as tls
 import cufflinks as cf
+import plotly.graph_objs as go
 from plotly.graph_objs import *
 from datetime import date, timedelta
 from calendario_anual import *
@@ -20,8 +21,13 @@ class Grafics():
             self.dp = self.chesf
         else:
             self.dp = self.ons
+
+        x = [date(2008,9,2)+timedelta(days=i) for i in range(366)]
+        #print(x)
+        x = [i.strftime("%d %B") for i in x]
         plotly.offline.plot([{
         'y':self.dp[ano],
+        'x':x,
         'name' : ano,
         } for ano in self.dp.columns])
 
@@ -41,7 +47,9 @@ class Grafics():
             valor.append(x)
         maxi={"ano":ano, "valor":valor}
         maxi=pd.DataFrame(maxi)
-        plotly.offline.plot([{
-        'y':maxi["valor"],
-        'x':maxi["ano"],
-        }])
+        layout = go.Layout(title='Maxima anual %s' %posto,
+        yaxis=dict(title='Vazão [m³/dia]'),
+        xaxis=dict(title='Ano Hidrológico'))
+        data = [go.Scatter(x=maxi["ano"], y=maxi['valor'], mode='lines', name='max')]
+        fig = go.Figure(data=data, layout=layout)
+        plotly.offline.plot(fig, filename='grafico de max %s'%posto)
