@@ -21,12 +21,18 @@ class Base():
         self.ons = ons_dataframe()
         self.result = uni()
 
-    def grafico(self):
+    def grafico(self, nivel_ons=None, nivel_chesf=None):
         """Plota os graficos """
         #cf.go_offline()
-        quartil_ons = np.percentile(self.ons['Vazao'], 75)
-        quartil_chesf = np.percentile(self.chesf['Vazao'], 75)
+        if nivel_ons == None:
+            quartil_ons = np.percentile(self.ons['Vazao'], 75)
+        else:
+            quartil_ons = nivel_ons
+        if nivel_chesf == None:
+            quartil_chesf = np.percentile(self.chesf['Vazao'], 75)
 
+        else:
+            quartil_chesf = nivel_chesf
         lin_quartil_ons = Scatter(x=self.result['Dia'],
         y=[quartil_ons for h in self.result.iterrows()], name='Cheia ONS')
 
@@ -41,7 +47,7 @@ class Base():
 
         data = Data([ons, chesf, lin_quartil_ons, lin_quartil_chesf])
         layout = dict(title='Vazão limite', xaxis=dict(title='Dias'),
-        yaxis=dict(title='m³ de água'))
+        yaxis=dict(title='Vazão [m³/dia]'))
 
-        plotly.offline.plot(dict(data=data, layout=layout))
+        plotly.offline.plot(dict(data=data, layout=layout), filename='grafico com nivel')
         #self.result.iplot(kind='spread')
