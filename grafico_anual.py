@@ -55,8 +55,8 @@ class Grafics():
             valor.append(x)
         maxi={"ano":ano, "valor":valor}
         maxi=pd.DataFrame(maxi)
-        layout = go.Layout(title='Maxima anual %s' %posto,
-        yaxis=dict(title='Vazão [m³/s]'),
+        layout = go.Layout(title='Maxima anual %s' %posto, 
+        yaxis=dict(title='Vazão [m³/s]', range=[0,19000]),
         xaxis=dict(title='Ano hidrológico'))
         data = [go.Scatter(x=maxi["ano"], y=maxi['valor'], mode='lines', name='max')]
         fig = go.Figure(data=data, layout=layout)
