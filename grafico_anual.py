@@ -28,11 +28,14 @@ class Grafics():
 
         #self.dp = pd.DataFrame(self.dp, index=x)
         layout = go.Layout(title="Hidrograma %s"%posto,
-        yaxis=dict(title='Vazão [m³/s]')
-        )
+        yaxis=dict(title='Vazão [m³/s]', range=[0, 19000]), showlegend=False)
         data=[]
+
         for ano in self.dp.columns:
-            data.append(go.Scatter(x=x,y=self.dp[ano],name=ano))
+            data.append(go.Scatter(x=x,y=self.dp[ano],name=ano,
+            marker=dict(cmax=len(self.dp.columns),cmin=0, size=5, color=[ano]*366,
+            colorbar=dict(title='Anos'),
+            colorscale='Jet'), mode='markers'))
         fig = go.Figure(data=data, layout=layout)
         plotly.offline.plot(fig, filename='hidrogama %s'%posto)
 
