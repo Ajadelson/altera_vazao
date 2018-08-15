@@ -128,7 +128,7 @@ class Stats():
         data.append(go.Scatter(x=new_df.columns, y=new_df.mean(skipna=True), mode='lines', name='média'))
 
         layout = go.Layout(
-        title='Box plot por ano hidrológico da taxa de recessao %s'%posto,
+        title='Box plot por ano hidrológico da taxa de ascensão %s'%posto,
         yaxis=dict(title='taxa [m³/dia]')
         )
 
