@@ -24,14 +24,17 @@ class Grafics():
 
         x = [date(2007,9,2)+timedelta(days=i) for i in self.dp.index]
         #print(x)
-        x = [i.strftime("%d %B") for i in x]
+        x = [i.strftime("%d %b") for i in x]
 
         #self.dp = pd.DataFrame(self.dp, index=x)
-        plotly.offline.plot([{
-        'y':self.dp[ano],
-        'x':x,
-        'name' : ano,
-        } for ano in self.dp.columns])
+        layout = go.Layout(title="Hidrograma %s"%posto,
+        yaxis=dict(title='Vazão [m³/s]')
+        )
+        data=[]
+        for ano in self.dp.columns:
+            data.append(go.Scatter(x=x,y=self.dp[ano],name=ano))
+        fig = go.Figure(data=data, layout=layout)
+        plotly.offline.plot(fig, filename='hidrogama %s'%posto)
 
 
     def max_anual(self, posto='ons'):
@@ -50,7 +53,7 @@ class Grafics():
         maxi={"ano":ano, "valor":valor}
         maxi=pd.DataFrame(maxi)
         layout = go.Layout(title='Maxima anual %s' %posto,
-        yaxis=dict(title='Vazão [m³/dia]'),
+        yaxis=dict(title='Vazão [m³/s]'),
         xaxis=dict(title='Ano hidrológico'))
         data = [go.Scatter(x=maxi["ano"], y=maxi['valor'], mode='lines', name='max')]
         fig = go.Figure(data=data, layout=layout)

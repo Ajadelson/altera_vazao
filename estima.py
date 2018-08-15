@@ -129,7 +129,7 @@ class Stats():
 
         layout = go.Layout(
         title='Box plot por ano hidrológico da taxa de ascensão %s'%posto,
-        yaxis=dict(title='taxa [m³/dia]')
+        yaxis=dict(title='taxa [m³/s]')
         )
 
         fig = go.Figure(data=data, layout=layout)
@@ -160,7 +160,7 @@ class Stats():
 
         layout = go.Layout(
         title='Box plot por ano hidrológico da taxa de recessao %s'%posto,
-        yaxis=dict(title='taxa [m³/dia]')
+        yaxis=dict(title='taxa [m³/s]')
         )
 
         fig = go.Figure(data=data, layout=layout)
