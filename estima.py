@@ -47,21 +47,18 @@ class Stats():
                 elif linha[col] > self.ponteirodois:
                     #print("Entra")
                     self.ponteirodois = linha[col]
-                    flag = True
-                    tempo+=1
-                elif flag:
+
                     aux = self.ponteirodois - self.ponteiroum
-                    aux = aux / tempo
+                    aux = aux / 2
                     lista.append(aux)
-                    flag = False
-                    tempo = 1
-                    rev+=1
+                    self.ponteiroum = linha[col]
+
                 else:
                     dia = 0
             dic[col] = lista
             reversao[col]=rev
         self.ascensao = pd.Series(dic)
-        return(reversao,self.ascensao)
+        return(self.ascensao)
 
     def taxas_recessao(self, posto = 'chesf'):
         """Calcula as taxas de ascensao, recessao"""
@@ -88,27 +85,67 @@ class Stats():
                 elif linha[col] < self.ponteirodois:
                     #print("Entra")
                     self.ponteirodois = linha[col]
-                    flag = True
-                    tempo+=1
-                elif flag:
+
                     aux = self.ponteirodois - self.ponteiroum
-                    aux = aux / tempo
+                    aux = aux / 2
                     lista.append(aux)
-                    flag = False
-                    tempo = 1
-                    rev+=1
+                    self.ponteiroum = linha[col]
                 else:
                     dia = 0
             dic[col] = lista
             reversao[col]=rev
         self.recessao = pd.Series(dic)
-        return(reversao, self.recessao)
+        return(self.recessao)
+
+    def numero_reversao(self, posto='chesf'):
+        if posto == 'chesf':
+            fig = self.chesf
+        else:
+            fig = self.ons
+
+        reversao = {}
+        reversao['quantidade'] = []
+        for col in fig.columns:
+            dia = 0
+            contagem = 0
+            for index, linha in fig.iterrows():
+                if dia == 0:
+                    self.ponteiroum = linha[col]
+                    dia+=1
+                elif dia == 1:
+                    self.ponteirodois = linha[col]
+                    aux = self.ponteirodois - self.ponteiroum
+                    self.ponteiroum = linha[col]
+                    dia+=1
+                    if aux>0:
+                        flag = True
+                    else:
+                        flag = False
+                else:
+                    if flag:
+                        self.ponteirodois = linha[col]
+                        aux = self.ponteirodois - self.ponteiroum
+                        self.ponteiroum = linha[col]
+                        if aux < 0:
+                            contagem+=1
+                            flag = False
+                    else:
+                        self.ponteirodois = linha[col]
+                        aux = self.ponteirodois - self.ponteiroum
+                        self.ponteiroum = linha[col]
+                        if aux > 0:
+                            contagem+=1
+                            flag = True
+            reversao['quantidade'].append(contagem)
+        self.reversao = pd.DataFrame(reversao)
+        return (self.reversao)
+
 
     def grafico_ascensao(self, posto = 'chesf'):
         if posto == 'chesf':
-            r, fig = self.taxas_ascensao('chesf')
+            fig = self.taxas_ascensao('chesf')
         else:
-            r, fig = self.taxas_ascensao('ons')
+            fig = self.taxas_ascensao('ons')
 
         data = []
         quant = 0
@@ -137,9 +174,9 @@ class Stats():
 
     def grafico_recessao(self, posto = 'chesf'):
         if posto == 'chesf':
-            r, fig = self.taxas_recessao('chesf')
+            fig = self.taxas_recessao('chesf')
         else:
-            r, fig = self.taxas_recessao('ons')
+            fig = self.taxas_recessao('ons')
 
         data = []
         quant = 0
@@ -166,29 +203,20 @@ class Stats():
         fig = go.Figure(data=data, layout=layout)
         plotly.offline.plot(fig, filename='box plot taxa de recessao %s'%posto)
 
+
     def grafico_reversao(self, posto='chesf'):
         if posto == 'chesf':
-            revum, fig = self.taxas_ascensao('chesf')
-            revdois, fig2 = self.taxas_recessao('chesf')
+            fig = self.numero_reversao('chesf')
         else:
-            revum, fig = self.taxas_ascensao('ons')
-            revdois, fig = self.taxas_recessao('ons')
+            fig = self.numero_reversao('ons')
 
-        new_rev = {'quantidade':[]}
-        revtoasc = {'quantidade':[]}
-        revtorec = {'quantidade':[]}
-        for i in revum.keys():
-            new_rev['quantidade'].append(revum[i]+revdois[i])
-            revtoasc['quantidade'].append(revdois[i])
-            revtorec['quantidade'].append(revum[i])
-        new_rev = pd.DataFrame(new_rev)
-        revtoasc = pd.DataFrame(revtoasc)
-        revtorec = pd.DataFrame(revtorec)
         layout = go.Layout(
         title='Numero de reversões por ano hidrologico da %s'%posto,
+        yaxis= dict(title= 'numero de reversões',range = [0,230]),
         )
-        data = [go.Scatter(y=new_rev['quantidade'], name='nº de reversões totais', mode='lines+markers'),
-        go.Scatter(y=revtoasc['quantidade'], name='reversões para ascensão', mode='lines+markers'),
-        go.Scatter(y=revtorec['quantidade'], name='reversões para recessao', mode='lines+markers')]
+        dados = []
+
+
+        data = [go.Scatter(y=fig['quantidade'], name='nº de reversões totais', mode='lines+markers')]
         fig = go.Figure(data=data, layout=layout)
         plotly.offline.plot(fig, filename='Numero de reversões %s'%posto)
