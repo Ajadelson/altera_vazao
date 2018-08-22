@@ -5,6 +5,7 @@ import plotly.tools as tls
 import numpy as np
 import plotly.graph_objs as go
 from plotly.graph_objs import *
+from numpy import *
 from datetime import date, timedelta
 from calendario_anual import *
 from dadoframe import chesf_dataframe, ons_dataframe, uni
@@ -160,14 +161,15 @@ class Stats():
                 dicio[key].append(None)
 
         new_df = pd.DataFrame(dicio)
+        N = len(new_df.columns)+1
+        c=['hsl('+str(h)+',50%'+',50%' for h in linspace(0,360,N)]
         for col in new_df.columns:
-            data.append(go.Box(y=new_df[col], name=col))
-        data.append(go.Scatter(x=new_df.columns, y=new_df.mean(skipna=True), mode='lines', name='média'))
+            data.append(go.Box(y=new_df[col], name=col, marker=dict(color=c[col]), showlegend=False))
 
         layout = go.Layout(
         title='Box plot por ano hidrológico da taxa de ascensão %s'%posto,
-        yaxis=dict(title='taxa [m³/s]')
-        )
+        yaxis=dict(title='taxa [m³/s]', range=[0,2050]), xaxis=dict(title='anos'))
+        data.append(go.Scatter(x=new_df.columns, y=new_df.mean(skipna=True), mode='lines', name='média'))
 
         fig = go.Figure(data=data, layout=layout)
         plotly.offline.plot(fig, filename='box plot taxa de ascensao %s'%posto)
@@ -191,13 +193,15 @@ class Stats():
                 dicio[key].append(None)
 
         new_df = pd.DataFrame(dicio)
+        N = len(new_df.columns)+1
+        c=['hsl('+str(h)+',50%'+',50%' for h in linspace(0,360,N)]
         for col in new_df.columns:
-            data.append(go.Box(y=new_df[col], name=col))
+            data.append(go.Box(y=new_df[col], name=col, marker=dict(color=c[col]), showlegend=False))
         data.append(go.Scatter(x=new_df.columns, y=new_df.mean(skipna=True), mode='lines', name='média'))
 
         layout = go.Layout(
         title='Box plot por ano hidrológico da taxa de recessao %s'%posto,
-        yaxis=dict(title='taxa [m³/s]')
+        yaxis=dict(title='taxa [m³/s]', range=[-1150,0]), xaxis=dict(title='anos')
         )
 
         fig = go.Figure(data=data, layout=layout)
