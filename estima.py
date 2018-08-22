@@ -168,7 +168,7 @@ class Stats():
 
         layout = go.Layout(
         title='Box plot por ano hidrológico da taxa de ascensão %s'%posto,
-        yaxis=dict(title='taxa [m³/s]', range=[0,2050]), xaxis=dict(title='anos'))
+        yaxis=dict(title='taxa de ascensão', range=[0,2050]), xaxis=dict(title='anos'))
         data.append(go.Scatter(x=new_df.columns, y=new_df.mean(skipna=True), mode='lines', name='média'))
 
         fig = go.Figure(data=data, layout=layout)
@@ -201,7 +201,7 @@ class Stats():
 
         layout = go.Layout(
         title='Box plot por ano hidrológico da taxa de recessao %s'%posto,
-        yaxis=dict(title='taxa [m³/s]', range=[-1150,0]), xaxis=dict(title='anos')
+        yaxis=dict(title='taxa de receção', range=[-1150,0]), xaxis=dict(title='anos')
         )
 
         fig = go.Figure(data=data, layout=layout)
